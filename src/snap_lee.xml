@@ -1,0 +1,126 @@
+<graph id="Sentinel-1_Preprocessing">
+    <version>1.0</version>
+
+    <node id="Updated-Orbit-File">
+        <operator>Apply-Orbit-File</operator>
+        <sources>
+            <source>${sourceProduct}</source>
+        </sources>
+        <parameters>
+            <orbitType>Sentinel Precise (Auto Download)</orbitType>
+            <polyDegree>3</polyDegree>
+            <continueOnFail>true</continueOnFail>
+        </parameters>
+    </node>
+
+    <node id="Calibrated">
+        <operator>Calibration</operator>
+        <sources>
+            <sourceProduct refid="Updated-Orbit-File"/>
+        </sources>
+        <parameters>
+            <createGammaBand>false</createGammaBand>
+            <outputGammaBand>false</outputGammaBand>
+            <outputSigmaBand>false</outputSigmaBand>
+            <outputBetaBand>true</outputBetaBand>
+        </parameters>
+    </node>
+
+    <node id="ThermalNoise">
+        <operator>ThermalNoiseRemoval</operator>
+        <sources>
+            <sourceProduct refid="Calibrated"/>
+        </sources>
+        <parameters>
+            <removeThermalNoise>true</removeThermalNoise>
+        </parameters>
+    </node>
+
+    <node id="SpeckleReduced">
+        <operator>Speckle-Filter</operator>
+        <sources>
+            <sourceProduct refid="ThermalNoise"/>
+        </sources>
+        <parameters>
+            <filter>Lee</filter>
+            <filterSizeX>3</filterSizeX>
+            <filterSizeY>3</filterSizeY>
+        </parameters>
+    </node>
+
+    <node id="TerrainFlattened">
+        <operator>Terrain-Flattening</operator>
+        <sources>
+            <sourceProduct refid="SpeckleReduced"/>
+        </sources>
+        <parameters>
+            <demName>SRTM 1Sec HGT</demName>
+        </parameters>
+    </node>
+
+    <node id="TerrainCorrected">
+        <operator>Terrain-Correction</operator>
+        <sources>
+            <sourceProduct refid="TerrainFlattened"/>
+        </sources>
+        <parameters>
+            <demName>SRTM 1Sec HGT</demName>
+        </parameters>
+    </node>
+
+    <node id="SubsetAOI">
+        <operator>Subset</operator>
+        <sources>
+            <sourceProduct refid="TerrainCorrected"/>
+        </sources>
+        <parameters>
+            <geoRegion>${georegion}</geoRegion>
+            <copyMetadata>true</copyMetadata>
+        </parameters>
+    </node>
+
+    <node id="SubsetVV">
+        <operator>Subset</operator>
+        <sources>
+            <sourceProduct refid="SubsetAOI"/>
+        </sources>
+        <parameters>
+            <bandNames>Gamma0_VV</bandNames>
+            <copyMetadata>true</copyMetadata>
+        </parameters>
+    </node>
+
+    <node id="SubsetVH">
+        <operator>Subset</operator>
+        <sources>
+            <sourceProduct refid="SubsetAOI"/>
+        </sources>
+        <parameters>
+            <bandNames>Gamma0_VH</bandNames>
+            <copyMetadata>true</copyMetadata>
+        </parameters>
+    </node>
+
+    <node id="Write">
+        <operator>Write</operator>
+        <sources>
+            <sourceProduct refid="SubsetVV"/>
+        </sources>
+        <parameters>
+            <file>${outputVV}</file>
+            <formatName>GeoTIFF</formatName>
+        </parameters>
+    </node>
+
+    <node id="Write">
+        <operator>Write</operator>
+        <sources>
+            <sourceProduct refid="SubsetVH"/>
+        </sources>
+        <parameters>
+            <file>${outputVH}</file>
+            <formatName>GeoTIFF</formatName>
+        </parameters>
+    </node>
+
+</graph>
