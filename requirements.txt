@@ -1,0 +1,10 @@
+shapely
+rasterio
+numpy
+pandas
+geopandas
+scikit-learn
+tqdm
+imblearn
+scipy
+pyproj
