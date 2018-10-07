@@ -1,6 +1,7 @@
 .vscode/
-data/
-notebooks/
+data/raw
+data/processed
+data/output
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
