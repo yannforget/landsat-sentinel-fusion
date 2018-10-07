@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/151975445.svg)](https://zenodo.org/badge/latestdoi/151975445)
+
 This repository contains the Python code supporting the following paper:
 
 * Forget Y., Shimoni M., Gilbert M., and Linard C. *Complementarity Between Sentinel-1 and Landsat 8 Imagery for Built-Up Mapping in Sub-Saharan Africa*, In Press, 2018.
